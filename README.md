@@ -15,6 +15,8 @@ A professional Spring Boot application for managing beauty bar operations.
 - **Java 21**
 - **Spring Boot 3.2.0**
 - **Spring Data JPA**
+- **Spring Security** with OAuth2
+- **Keycloak** (authentication/authorization)
 - **H2 Database** (development)
 - **Maven** (build tool)
 - **Bean Validation** (input validation)
@@ -66,6 +68,15 @@ src/main/java/com/beautybar/
 ### Prerequisites
 - Java 21
 - Maven 3.6+
+- Docker (for Keycloak)
+
+### Start Keycloak
+```bash
+docker-compose up -d
+```
+
+### Configure Keycloak
+See [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md) for detailed setup instructions.
 
 ### Development Mode
 ```bash
@@ -92,10 +103,22 @@ src/main/java/com/beautybar/
 
 ## Sample API Usage
 
-### Create Customer
+### Get JWT Token
+```bash
+curl -X POST http://localhost:8180/realms/beautybar/protocol/openid-connect/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=password" \
+  -d "client_id=beautybar-api" \
+  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "username=YOUR_USERNAME" \
+  -d "password=YOUR_PASSWORD"
+```
+
+### Create Customer (Admin/Manager only)
 ```bash
 curl -X POST http://localhost:8080/beautybar/api/customers \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "name": "Jane Doe",
     "email": "jane.doe@example.com",
@@ -103,9 +126,10 @@ curl -X POST http://localhost:8080/beautybar/api/customers \
   }'
 ```
 
-### Get All Customers
+### Get All Customers (Authenticated users)
 ```bash
-curl http://localhost:8080/beautybar/api/customers
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8080/beautybar/api/customers
 ```
 
 ## Best Practices Implemented
