@@ -32,3 +32,8 @@ logs/
 *.db
 *.trace.db
 *.lock.db
+/keycloak/
+# Twilio secrets
+twilio/
+*.env
+.env.*

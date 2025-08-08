@@ -57,6 +57,22 @@ src/main/java/com/beautybar/
 | DELETE | `/api/customers/{id}` | Delete customer |
 | GET | `/api/customers/search?name={name}` | Search customers by name |
 
+### User Management
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/users` | Create new user (Admin only) |
+| GET | `/api/users` | Get all users (Admin only) |
+| GET | `/api/users/{userId}` | Get user by ID (Admin only) |
+| GET | `/api/users/search?username={username}` | Search users by username (Admin only) |
+| POST | `/api/users/{userId}/reset-password` | Trigger password reset email (Admin only) |
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth/user-info` | Get current user information and roles |
+
 ### Health Check
 
 | Method | Endpoint | Description |
@@ -103,13 +119,24 @@ See [KEYCLOAK_SETUP.md](KEYCLOAK_SETUP.md) for detailed setup instructions.
 
 ## Sample API Usage
 
-### Get JWT Token
+### Get JWT Token (Admin)
 ```bash
-curl -X POST http://localhost:8180/realms/beautybar/protocol/openid-connect/token \
+curl -X POST http://localhost:8180/realms/beaty-bar-realm/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=password" \
-  -d "client_id=beautybar-api" \
-  -d "client_secret=YOUR_CLIENT_SECRET" \
+  -d "client_id=beaty-bar-client-admin" \
+  -d "client_secret=ZPzvufTbOqS1w4dtBGP0KEzFM0KWMKIx" \
+  -d "username=YOUR_USERNAME" \
+  -d "password=YOUR_PASSWORD"
+```
+
+### Get JWT Token (User)
+```bash
+curl -X POST http://localhost:8180/realms/beaty-bar-realm/protocol/openid-connect/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=password" \
+  -d "client_id=beaty-bar-client-users" \
+  -d "client_secret=oCMwn2FXE6VcC7WKXxaeNeWm3IECPZ2d" \
   -d "username=YOUR_USERNAME" \
   -d "password=YOUR_PASSWORD"
 ```
@@ -130,6 +157,32 @@ curl -X POST http://localhost:8080/beautybar/api/customers \
 ```bash
 curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   http://localhost:8080/beautybar/api/customers
+```
+
+### Get User Info
+```bash
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8080/beautybar/api/auth/user-info
+```
+
+### Create User (Admin only)
+```bash
+curl -X POST http://localhost:8080/beautybar/api/users \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN" \
+  -d '{
+    "username": "testuser1",
+    "email": "testuser1@example.com",
+    "firstName": "Test",
+    "lastName": "User",
+    "password": "Test@123"
+  }'
+```
+
+### Get All Users (Admin only)
+```bash
+curl -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN" \
+  http://localhost:8080/beautybar/api/users
 ```
 
 ## Best Practices Implemented

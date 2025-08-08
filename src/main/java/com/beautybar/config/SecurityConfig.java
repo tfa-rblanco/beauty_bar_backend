@@ -12,15 +12,21 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final JwtAuthConverter jwtAuthConverter;
+
+    public SecurityConfig(JwtAuthConverter jwtAuthConverter) {
+        this.jwtAuthConverter = jwtAuthConverter;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/health", "/h2-console/**", "/actuator/**").permitAll()
+                .requestMatchers("/api/health", "/h2-console/**", "/actuator/**", "/api/auth/user-token", "/api/auth/token").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> {})
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
             )
             .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions().disable());
