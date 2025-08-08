@@ -32,3 +32,4 @@ logs/
 *.db
 *.trace.db
 *.lock.db
+/keycloak/

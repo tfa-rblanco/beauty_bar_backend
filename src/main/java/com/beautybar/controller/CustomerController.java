@@ -1,5 +1,6 @@
 package com.beautybar.controller;
 
+import com.beautybar.dto.ApiResponse;
 import com.beautybar.dto.CustomerDto;
 import com.beautybar.model.customer.Customer;
 import com.beautybar.service.customer.CustomerReader;
@@ -26,41 +27,42 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public ResponseEntity<ApiResponse<List<Customer>>> getAllCustomers() {
         List<Customer> customers = customerReader.getAllCustomers();
-        return ResponseEntity.ok(customers);
+        return ResponseEntity.ok(ApiResponse.success("Customers retrieved successfully", customers));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Customer>> getCustomerById(@PathVariable Long id) {
         Customer customer = customerReader.getCustomerById(id);
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok(ApiResponse.success("Customer retrieved successfully", customer));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ApiResponse<Customer>> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
         Customer createdCustomer = customerWriter.createCustomer(customerDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.success("Customer created successfully", createdCustomer));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ApiResponse<Customer>> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDto customerDto) {
         Customer updatedCustomer = customerWriter.updateCustomer(id, customerDto);
-        return ResponseEntity.ok(updatedCustomer);
+        return ResponseEntity.ok(ApiResponse.success("Customer updated successfully", updatedCustomer));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Object>> deleteCustomer(@PathVariable Long id) {
         customerWriter.deleteCustomer(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success("Customer deleted successfully", null));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Customer>> searchCustomers(@RequestParam String name) {
+    public ResponseEntity<ApiResponse<List<Customer>>> searchCustomers(@RequestParam String name) {
         List<Customer> customers = customerReader.searchCustomersByName(name);
-        return ResponseEntity.ok(customers);
+        return ResponseEntity.ok(ApiResponse.success("Customers found successfully", customers));
     }
 }
