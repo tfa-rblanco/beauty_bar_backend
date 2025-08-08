@@ -74,6 +74,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>square</artifactId>
+            <version>45.0.1.20250716</version>
+        </dependency>
     </dependencies>
     
     <build>
